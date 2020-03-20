@@ -165,9 +165,6 @@ public class Board extends AbstractBoard<Elements> {
         List<Point> freePoints = getAvailablePointsNear(getBomberman());
         Direction direction = getDirectionTo(freePoints.stream().findFirst().orElse(getBomberman()));
 
-        if (previousAct != null && previousAct.inverted().equals(direction)){
-            return direction.clockwise();
-        }
         return direction;
     }
 
