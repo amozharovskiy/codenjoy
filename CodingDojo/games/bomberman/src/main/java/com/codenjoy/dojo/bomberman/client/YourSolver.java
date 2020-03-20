@@ -28,6 +28,8 @@ import com.codenjoy.dojo.client.WebSocketRunner;
 import com.codenjoy.dojo.services.Dice;
 import com.codenjoy.dojo.services.RandomDice;
 
+import static com.codenjoy.dojo.services.Direction.*;
+
 /**
  * User: your name
  */
@@ -35,6 +37,8 @@ public class YourSolver implements Solver<Board> {
 
     private Dice dice;
     private Board board;
+    private Board previousBoard;
+    private Direction previousAct;
 
     public YourSolver(Dice dice) {
         this.dice = dice;
@@ -46,8 +50,13 @@ public class YourSolver implements Solver<Board> {
         this.board = board;
         if (board.isMyBombermanDead()) return "";
 
+
         // put your logic here
-        return Direction.ACT.toString();
+        Direction turn = board.turnAnswer(previousAct);
+
+        previousAct = turn;
+
+        return turn.ACT(true);
     }
 
     /**
@@ -59,7 +68,8 @@ public class YourSolver implements Solver<Board> {
     public static void main(String[] args) {
         WebSocketRunner.runClient(
                 // paste here board page url from browser after registration
-                "http://codenjoy.com:80/codenjoy-contest/board/player/3edq63tw0bq4w4iem7nb?code=1234567890123456789",
+//                "http://codenjoy.com:80/codenjoy-contest/board/player/3edq63tw0bq4w4iem7nb?code=1234567890123456789",
+                "http://127.0.0.1:8080/codenjoy-contest/board/player/7i64b1dwqa86t4pzhonv?code=6708380578561605232",
                 new YourSolver(new RandomDice()),
                 new Board());
     }

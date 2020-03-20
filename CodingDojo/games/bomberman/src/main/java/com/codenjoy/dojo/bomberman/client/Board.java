@@ -23,17 +23,18 @@ package com.codenjoy.dojo.bomberman.client;
  */
 
 
-import com.codenjoy.dojo.bomberman.client.simple.Pattern;
 import com.codenjoy.dojo.bomberman.model.Elements;
-import static com.codenjoy.dojo.bomberman.model.Elements.*;
-import static com.codenjoy.dojo.services.PointImpl.pt;
-
 import com.codenjoy.dojo.client.AbstractBoard;
+import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
+import com.codenjoy.dojo.services.PointImpl;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.codenjoy.dojo.bomberman.model.Elements.*;
+import static com.codenjoy.dojo.services.Direction.*;
+import static com.codenjoy.dojo.services.PointImpl.pt;
 
 public class Board extends AbstractBoard<Elements> {
 
@@ -159,5 +160,42 @@ public class Board extends AbstractBoard<Elements> {
     public boolean isBarrierAt(Point point) {
         return isBarrierAt(point.getX(), point.getY());
     }
-    
+
+    public Direction turnAnswer(Direction previousAct) {
+        List<Point> freePoints = getAvailablePointsNear(getBomberman());
+        Direction direction = getDirectionTo(freePoints.stream().findFirst().orElse(getBomberman()));
+
+        if (previousAct != null && previousAct.inverted().equals(direction)){
+            return direction.clockwise();
+        }
+        return direction;
+    }
+
+    private Direction getDirectionTo(Point point) {
+        Point bomber = getBomberman();
+        if (bomber.getX() > point.getX()){
+            return LEFT;
+        }
+
+        if (bomber.getX() < point.getX()){
+            return RIGHT;
+        }
+
+        if (bomber.getY() > point.getY()){
+            return UP;
+        }
+
+        if (bomber.getY() < point.getY()){
+            return DOWN;
+        }
+        return STOP;
+    }
+
+    private List<Point> getAvailablePointsNear(Point point) {
+        List<Point> points = Arrays.asList(new PointImpl(point.getX() + 1, point.getY()),
+                new PointImpl(point.getX() - 1, point.getY()),
+                new PointImpl(point.getX(), point.getY() + 1),
+                new PointImpl(point.getX(), point.getY() - 1));
+        return points.stream().filter(point1 -> isAt(point1, NONE)).collect(Collectors.toList());
+    }
 }
